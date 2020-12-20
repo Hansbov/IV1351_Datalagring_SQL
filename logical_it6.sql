@@ -1,3 +1,5 @@
+
+
 CREATE TABLE address (
  id INT NOT NULL,
  street VARCHAR(500),
@@ -35,13 +37,12 @@ CREATE TABLE phone_number (
 ALTER TABLE phone_number ADD CONSTRAINT PK_phone_number PRIMARY KEY (phone_number,person_id);
 
 
-CREATE TABLE place (
- id INT NOT NULL,
- room_number VARCHAR(500),
- addess_id INT
+CREATE TABLE room (
+ room_number VARCHAR(500) NOT NULL,
+ addess_id INT NOT NULL
 );
 
-ALTER TABLE place ADD CONSTRAINT PK_place PRIMARY KEY (id);
+ALTER TABLE room ADD CONSTRAINT PK_room PRIMARY KEY (room_number, addess_id);
 
 
 CREATE TABLE pricing_scheme (
@@ -138,12 +139,13 @@ CREATE TABLE rental (
 
 ALTER TABLE rental ADD CONSTRAINT PK_rental PRIMARY KEY (id);
 
+CREATE TYPE SKILL AS ENUM ('beginner','intermediate','advanced');
 
 CREATE TABLE ensemble (
  id INT NOT NULL,
  ensable_id VARCHAR(500),
  genre VARCHAR(500),
- skill_level INT,
+ skill_level SKILL,
  min_students INT NOT NULL,
  max_students INT,
  last_day_to_apply DATE NOT NULL,
@@ -157,7 +159,8 @@ ALTER TABLE ensemble ADD CONSTRAINT PK_ensemble PRIMARY KEY (id);
 CREATE TABLE ensemble_instrument (
  ensemble_id INT NOT NULL,
  instrument_id INT NOT NULL,
- is_available BOOLEAN DEFAULT True NOT NULL
+ places_available INT NOT NULL,
+ places_filled INT DEFAULT 0 NOT NULL
 );
 
 ALTER TABLE ensemble_instrument ADD CONSTRAINT PK_ensemble_instrument PRIMARY KEY (ensemble_id,instrument_id);
@@ -166,7 +169,7 @@ ALTER TABLE ensemble_instrument ADD CONSTRAINT PK_ensemble_instrument PRIMARY KE
 CREATE TABLE group_lesson (
  id INT NOT NULL,
  group_id VARCHAR(500),
- skill_level INT NOT NULL,
+ skill_level SKILL NOT NULL,
  min_students INT NOT NULL,
  max_students INT,
  last_day_to_apply DATE,
@@ -197,7 +200,7 @@ CREATE TABLE appointment (
  start_time TIME(10) NOT NULL,
  end_time TIME(10) NOT NULL,
  pricing_scheme_id INT,
- place_id INT,
+ room_number INT,
  ensemble_id INT,
  group_lesson_id INT
 );
@@ -216,7 +219,7 @@ ALTER TABLE audition ADD CONSTRAINT PK_audition PRIMARY KEY (appointment_id);
 
 CREATE TABLE enrollment_request (
  id INT NOT NULL,
- skill_level INT NOT NULL,
+ skill_level SKILL NOT NULL,
  do_keep BOOLEAN NOT NULL,
  place_offered BOOLEAN,
  place_accepted BOOLEAN,
@@ -231,7 +234,7 @@ ALTER TABLE enrollment_request ADD CONSTRAINT PK_enrollment_request PRIMARY KEY 
 
 CREATE TABLE individual_lesson (
  appointment_id INT NOT NULL,
- skill_level INT NOT NULL,
+ skill_level SKILL NOT NULL,
  instrument_id INT NOT NULL
 );
 
@@ -254,13 +257,15 @@ CREATE TABLE student_appointment (
 ALTER TABLE student_appointment ADD CONSTRAINT PK_student_appointment PRIMARY KEY (appointment_id,student_id);
 
 
+-- foreign keys
+
 ALTER TABLE person ADD CONSTRAINT FK_address FOREIGN KEY (address_id) REFERENCES address (id);
 
 
 ALTER TABLE phone_number ADD CONSTRAINT FK_person FOREIGN KEY (person_id) REFERENCES person (id);
 
 
-ALTER TABLE place ADD CONSTRAINT FK_address FOREIGN KEY (addess_id) REFERENCES address (id);
+ALTER TABLE room ADD CONSTRAINT FK_address FOREIGN KEY (addess_id) REFERENCES address (id);
 
 
 ALTER TABLE sibling ADD CONSTRAINT FK_sibling_older FOREIGN KEY (person_id_older) REFERENCES person (id);
@@ -306,7 +311,7 @@ ALTER TABLE instrument_to_rent ADD CONSTRAINT FK_rental FOREIGN KEY (rental_id) 
 
 
 ALTER TABLE appointment ADD CONSTRAINT FK_pricing_scheme FOREIGN KEY (pricing_scheme_id) REFERENCES pricing_scheme (id);
-ALTER TABLE appointment ADD CONSTRAINT FK_place FOREIGN KEY (place_id) REFERENCES place (id);
+ALTER TABLE appointment ADD CONSTRAINT FK_room FOREIGN KEY (room_number) REFERENCES room (room_number);
 ALTER TABLE appointment ADD CONSTRAINT FK_ensemble FOREIGN KEY (ensemble_id) REFERENCES ensemble (id);
 ALTER TABLE appointment ADD CONSTRAINT FK_group_lesson FOREIGN KEY (group_lesson_id) REFERENCES group_lesson (id);
 
