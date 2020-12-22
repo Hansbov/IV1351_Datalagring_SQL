@@ -59,24 +59,24 @@ VALUES
 (5, 'cello');
 
 
-/* Gör student_id till NOT NULL i rental */
-
-INSERT INTO rental (id , start_date, end_date, student_id)
+INSERT INTO instrument_to_rent (id, instrument_id, type_of_instrument, brand, fee, is_available)
 VALUES 
-(1,'2020-08-15', '2020-12-15',1),
-(2,'2020-10-15', '2020-11-15',3),
-(3,'2020-08-15', '2020-12-15',6),
-(4,'2020-08-15', '2020-12-15',3);
+(1,'trumpet22', 'trumpet', 'conn', 250, False),
+(2,'trumpet21', 'trumpet', 'conn', 250, False),
+(3,'violin_master', 'violin', 'stradivarius', 10500, True),
+(4,'violin_beginner1', 'violin', 'grasshopper', 100, False),
+(5,'violin_beginner2', 'violin', 'grasshopper', 100, True),
+(6,'guitar1', 'guitar', 'plingplong', 300, False),
+(7,'guitar3', 'guitar', 'plong', 250, True),
+(8,'guitar2', 'guitar', 'pling', 250, True);
 
-INSERT INTO instrument_to_rent (id, instrument_id, type_of_instrument, brand, fee, rental_id)
+INSERT INTO rental (id , start_date, end_date, student_id, instrument_id)
 VALUES 
-(1,'trumpet22', 'trumpet', 'conn', 250, 1),
-(2,'trumpet21', 'trumpet', 'conn', 250, 2),
-(3,'violin_master', 'violin', 'stradivarius', 10500, NULL),
-(4,'violin_beginner1', 'violin', 'grasshopper', 100, 3),
-(5,'violin_beginner2', 'violin', 'grasshopper', 100, NULL),
-(6,'guitar1', 'guitar', 'plingplong', 300, 4),
-(7,'guitar3', 'guitar', 'plong', 250, NULL),
-(8,'guitar2', 'guitar', 'pling', 250, NULL);
+(1,'2020-08-15', '2020-12-15',1, 1),
+(2,'2020-10-15', '2020-11-15',3, 2),
+(3,'2020-08-15', '2020-12-15',6, 4),
+(4,'2020-08-15', '2020-12-15',3, 6);
+
+
 
 

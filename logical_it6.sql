@@ -1,6 +1,6 @@
 
 
-CREATE TABLE address (
+CREATE TABLE address(
  id INT NOT NULL,
  street VARCHAR(500),
  zip_code VARCHAR(500),
@@ -38,7 +38,7 @@ ALTER TABLE phone_number ADD CONSTRAINT PK_phone_number PRIMARY KEY (phone_numbe
 
 
 CREATE TABLE room (
- room_number VARCHAR(500) NOT NULL,
+ room_number VARCHAR(500) NOT NULL UNIQUE,
  addess_id INT NOT NULL
 );
 
@@ -134,7 +134,8 @@ CREATE TABLE rental (
  id INT NOT NULL,
  start_date DATE NOT NULL,
  end_date DATE NOT NULL,
- student_id INT
+ student_id INT NOT NULL,
+ instrument_id INT NOT NULL
 );
 
 ALTER TABLE rental ADD CONSTRAINT PK_rental PRIMARY KEY (id);
@@ -187,7 +188,7 @@ CREATE TABLE instrument_to_rent (
  type_of_instrument VARCHAR(500),
  brand VARCHAR(500),
  fee NUMERIC(10) NOT NULL,
- rental_id INT
+ is_available BOOLEAN DEFAULT True NOT NULL
 );
 
 ALTER TABLE instrument_to_rent ADD CONSTRAINT PK_instrument_to_rent PRIMARY KEY (id);
@@ -200,7 +201,7 @@ CREATE TABLE appointment (
  start_time TIME(10) NOT NULL,
  end_time TIME(10) NOT NULL,
  pricing_scheme_id INT,
- room_number INT,
+ room_number VARCHAR(500),
  ensemble_id INT,
  group_lesson_id INT
 );
@@ -307,7 +308,7 @@ ALTER TABLE group_lesson ADD CONSTRAINT FK_instrument FOREIGN KEY (instrument_id
 ALTER TABLE group_lesson ADD CONSTRAINT FK_instructor FOREIGN KEY (instructor_id) REFERENCES instructor (person_id);
 
 
-ALTER TABLE instrument_to_rent ADD CONSTRAINT FK_rental FOREIGN KEY (rental_id) REFERENCES rental (id);
+ALTER TABLE rental ADD CONSTRAINT FK_instrument_to_rent FOREIGN KEY (instrument_id) REFERENCES instrument_to_rent (id);
 
 
 ALTER TABLE appointment ADD CONSTRAINT FK_pricing_scheme FOREIGN KEY (pricing_scheme_id) REFERENCES pricing_scheme (id);
