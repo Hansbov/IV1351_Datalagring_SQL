@@ -61,12 +61,12 @@ VALUES
 
 INSERT INTO instrument_to_rent (id, instrument_id, type_of_instrument, brand, fee, is_available)
 VALUES 
-(1,'trumpet22', 'trumpet', 'conn', 250, False),
-(2,'trumpet21', 'trumpet', 'conn', 250, False),
+(1,'trumpet22', 'trumpet', 'conn', 250, True),
+(2,'trumpet21', 'trumpet', 'conn', 250, True),
 (3,'violin_master', 'violin', 'stradivarius', 10500, True),
-(4,'violin_beginner1', 'violin', 'grasshopper', 100, False),
+(4,'violin_beginner1', 'violin', 'grasshopper', 100, True),
 (5,'violin_beginner2', 'violin', 'grasshopper', 100, True),
-(6,'guitar1', 'guitar', 'plingplong', 300, False),
+(6,'guitar1', 'guitar', 'plingplong', 300, True),
 (7,'guitar3', 'guitar', 'plong', 250, True),
 (8,'guitar2', 'guitar', 'pling', 250, True);
 
@@ -75,8 +75,8 @@ VALUES
 (1,'2020-08-15', '2020-12-15',1, 1),
 (2,'2020-10-15', '2020-11-15',3, 2),
 (3,'2020-08-15', '2020-12-15',6, 4),
-(4,'2020-08-15', '2020-12-15',3, 6);
-
+(4,'2020-08-15', '2020-12-15',3, 6),
+(5,'2020-08-15', '2020-12-15',1, 5);
 
 
 
