@@ -38,11 +38,12 @@ ALTER TABLE phone_number ADD CONSTRAINT PK_phone_number PRIMARY KEY (phone_numbe
 
 
 CREATE TABLE room (
- room_number VARCHAR(500) NOT NULL UNIQUE,
- addess_id INT NOT NULL
+ room_number VARCHAR(500) NOT NULL,
+ address_id INT NOT NULL
 );
 
-ALTER TABLE room ADD CONSTRAINT PK_room PRIMARY KEY (room_number, addess_id);
+ALTER TABLE room ADD CONSTRAINT PK_room PRIMARY KEY (room_number);
+
 
 
 CREATE TABLE pricing_scheme (
@@ -196,14 +197,15 @@ ALTER TABLE instrument_to_rent ADD CONSTRAINT PK_instrument_to_rent PRIMARY KEY 
 
 CREATE TABLE appointment (
  id INT NOT NULL,
- appointment_id VARCHAR(500),
+ appointment_tag VARCHAR(500),
  date DATE NOT NULL,
  start_time TIME(10) NOT NULL,
  end_time TIME(10) NOT NULL,
- pricing_scheme_id INT,
- room_number VARCHAR(500),
+ pricing_scheme_id INT NOT NULL,
  ensemble_id INT,
- group_lesson_id INT
+ group_lesson_id INT,
+ address_id INT,
+ room_number VARCHAR(500)
 );
 
 ALTER TABLE appointment ADD CONSTRAINT PK_appointment PRIMARY KEY (id);
@@ -266,7 +268,7 @@ ALTER TABLE person ADD CONSTRAINT FK_address FOREIGN KEY (address_id) REFERENCES
 ALTER TABLE phone_number ADD CONSTRAINT FK_person FOREIGN KEY (person_id) REFERENCES person (id);
 
 
-ALTER TABLE room ADD CONSTRAINT FK_address FOREIGN KEY (addess_id) REFERENCES address (id);
+ALTER TABLE room ADD CONSTRAINT FK_addr FOREIGN KEY (address_id) REFERENCES address(id);
 
 
 ALTER TABLE sibling ADD CONSTRAINT FK_sibling_older FOREIGN KEY (person_id_older) REFERENCES person (id);
