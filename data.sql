@@ -173,7 +173,18 @@ VALUES (1, 'defaultaudition', '2020-01-11', '08:00', '09:00', 0, null, null, nul
 (5, 'big_band', '2020-02-15', '16:00','17:00',3,1, null,null,  'M114'),
 (6, 'big_band', '2020-03-15', '16:00','17:00',3,1, null,null,  'M114'),
 (7, 'big_band', '2020-04-15', '16:00','17:00',3,1, null,null,  'M114'),
-(8, 'big_band', '2020-05-15', '16:00','17:00',3,1, null,null,  'M114');
+(8, 'big_band', '2020-05-15', '16:00','17:00',3,1, null,null,  'M114'),
+(9, 'big_band', '2020-06-15', '16:00','17:00',3,1, null,null,  'M114'),
+(10, 'big_band', '2020-07-15', '16:00','17:00',3,1, null,null,  'M114'),
+(11, 'big_band', '2020-08-15', '16:00','17:00',3,1, null,null,  'M114'),
+(12, 'big_band', '2020-09-15', '16:00','17:00',3,1, null,null,  'M114'),
+(13, 'big_band', '2020-10-15', '16:00','17:00',3,1, null,null,  'M114'),
+(14, 'big_band', '2020-11-15', '16:00','17:00',3,1, null,null,  'M114'),
+(15, 'big_band', '2020-12-15', '16:00','17:00',3,1, null,null,  'M114');
+
+
+
+
 
 INSERT INTO student_appointment (appointment_id, student_id)
 VALUES
@@ -185,7 +196,20 @@ INSERT INTO instructor_appointment (appointment_id, instructor_id)
 VALUES
 (1,2),
 (2,4),
-(3,2);
+(3,2),
+(4,4),
+(5,4),
+(6,4),
+(7,4),
+(8,4),
+(9,4),
+(10,4),
+(11,4),
+(12,4),
+(13,4),
+(14,4),
+(15,4);
+
 
 INSERT INTO audition (appointment_id, is_passed, instrument_id)
 VALUES
