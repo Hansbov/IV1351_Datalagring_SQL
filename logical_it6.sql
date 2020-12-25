@@ -48,7 +48,7 @@ ALTER TABLE room ADD CONSTRAINT PK_room PRIMARY KEY (room_number);
 
 CREATE TABLE pricing_scheme (
  id INT NOT NULL,
- pricing_id VARCHAR(500) NOT NULL,
+ pricing_tag VARCHAR(500) NOT NULL,
  basic_lesson_price NUMERIC(10) NOT NULL,
  beginner_addition NUMERIC(10) NOT NULL,
  intermediet_addition NUMERIC(10) NOT NULL,
@@ -62,7 +62,7 @@ ALTER TABLE pricing_scheme ADD CONSTRAINT PK_pricing_scheme PRIMARY KEY (id);
 
 CREATE TABLE salary_scheme (
  id INT NOT NULL,
- salary_id VARCHAR(500) NOT NULL,
+ salary_tag VARCHAR(500) NOT NULL,
  basic_lesson_wage NUMERIC(10) NOT NULL,
  beginner_addition NUMERIC(10) NOT NULL,
  intermediet_addition NUMERIC(10) NOT NULL,
@@ -145,11 +145,11 @@ CREATE TYPE SKILL AS ENUM ('beginner','intermediate','advanced');
 
 CREATE TABLE ensemble (
  id INT NOT NULL,
- ensable_id VARCHAR(500),
+ ensable_name VARCHAR(500),
  genre VARCHAR(500),
  skill_level SKILL,
  min_students INT NOT NULL,
- max_students INT,
+ max_students INT NOT NULL,
  last_day_to_apply DATE NOT NULL,
  is_canceled BOOLEAN DEFAULT False,
  Instructor_id INT
@@ -170,7 +170,7 @@ ALTER TABLE ensemble_instrument ADD CONSTRAINT PK_ensemble_instrument PRIMARY KE
 
 CREATE TABLE group_lesson (
  id INT NOT NULL,
- group_id VARCHAR(500),
+ group_name VARCHAR(500),
  skill_level SKILL NOT NULL,
  min_students INT NOT NULL,
  max_students INT,
@@ -185,7 +185,7 @@ ALTER TABLE group_lesson ADD CONSTRAINT PK_group_lesson PRIMARY KEY (id);
 
 CREATE TABLE instrument_to_rent (
  id INT NOT NULL,
- instrument_id VARCHAR(500),
+ instrument_tag VARCHAR(500),
  type_of_instrument VARCHAR(500),
  brand VARCHAR(500),
  fee NUMERIC(10) NOT NULL,

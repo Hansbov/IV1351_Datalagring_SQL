@@ -10,7 +10,7 @@ SELECT EXTRACT(MONTH FROM start_date) AS month, type_of_instrument as instrument
 FROM rental as r INNER JOIN instrument_to_rent as i ON r.instrument_id=i.id
 WHERE EXTRACT(YEAR FROM start_date) = '2020'
 GROUP BY EXTRACT(MONTH FROM start_date), type_of_instrument
-ORDER BY EXTRACT(MONTH FROM start_date), amount_rented DEC;
+ORDER BY EXTRACT(MONTH FROM start_date), amount_rented DESC;
 
 
 /*Average number of rentals each month of a specified year*/
@@ -31,13 +31,14 @@ GROUP BY EXTRACT(MONTH FROM date);
 /*Number of lessons of each type per month of a specified year*/
 SELECT 
 EXTRACT(MONTH FROM date) AS month, 
-COUNT(group_lesson_id) AS group_lessons_given, 
-COUNT(ensable_id) as ensable_lessons_given,
+COUNT(ap.group_lesson_id) AS group_lessons_given, 
+COUNT(ap.ensemble_id) as ensable_lessons_given,
 COUNT(i.appointment_id) as individual_lessons_given,
 COUNT(aud.appointment_id) as auditions_given
 FROM appointment as ap LEFT JOIN individual_lesson as i ON ap.id =i.appointment_id LEFT JOIN audition as aud ON ap.id=aud.appointment_id
 WHERE EXTRACT(YEAR FROM date) = '2020'
-GROUP BY EXTRACT(MONTH FROM date);
+GROUP BY EXTRACT(MONTH FROM date)
+ORDER BY EXTRACT(MONTH FROM date);
 
 
 /*average number of lessons per month for whole year*/
@@ -52,13 +53,13 @@ GROUP BY EXTRACT(MONTH FROM date)) as a;
 SELECT i.employment_id as instructor, Count(a.id) as number_of_lessons
 FROM instructor as i
 INNER JOIN instructor_appointment as ia 
-    ON i.id = ia.instructor_id
+    ON i.person_id = ia.instructor_id
 INNER JOIN appointment as a
     ON ia.appointment_id = a.id
-HAVING number_of_lessons > 3
-WHERE EXTRACT(YEAR FROM a.date) = EXTRACT(YEAR FROM CURRENT_TIMESTAMP), EXTRACT(MONTH FROM a.date) = EXTRACT(MONTH FROM CURRENT_TIMESTAMP)
+WHERE EXTRACT(YEAR FROM a.date) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(MONTH FROM a.date) = EXTRACT(MONTH FROM CURRENT_DATE)
 GROUP BY instructor
-ORDER BY number_of_lessons DEC;
+HAVING  Count(a.id) > 0 AND EXTRACT(DAY FROM a.date) <= EXTRACT(DAY FROM CURRENT_DATE)
+ORDER BY number_of_lessons DESC;
 
 
 
@@ -66,23 +67,65 @@ ORDER BY number_of_lessons DEC;
 SELECT i.employment_id as instructor, Count(a.id) as number_of_lessons
 FROM instructor as i
 INNER JOIN instructor_appointment as ia 
-    ON i.id = ia.instructor_id
+    ON i.person_id = ia.instructor_id
 INNER JOIN appointment as a
     ON ia.appointment_id = a.id
-WHERE EXTRACT(YEAR FROM a.date) = EXTRACT(YEAR FROM CURRENT_TIMESTAMP), EXTRACT(MONTH FROM a.date) = (EXTRACT(MONTH FROM CURRENT_TIMESTAMP)-1)
+WHERE (EXTRACT(YEAR FROM a.date) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(MONTH FROM a.date) = (EXTRACT(MONTH FROM CURRENT_DATE)-1))
+    OR (EXTRACT(YEAR FROM a.date) = (EXTRACT(YEAR FROM CURRENT_DATE)-1) AND EXTRACT(MONTH FROM a.date) = '12')
 GROUP BY instructor
-ORDER BY number_of_lessons DEC
+ORDER BY number_of_lessons DESC
 LIMIT 3;
-/*higher grade*/
+
 
 /*
 List all ensembles held during the next week, sorted by music genre and weekday. 
 For each ensemble tell whether it's full booked, has 1-2 seats left or has more seats left.
 */
+SELECT e.genre as genre, a.date as appointment_date, 
+(CASE 
+    WHEN COUNT(student_id) = e.max_students THEN 'all seats filled'
+    WHEN COUNT(student_id) <= e.max_students-2 THEN '3 or more seats left'
+    ELSE 'less than 3 seats left' END) as booking_status
+FROM ensemble as e
+INNER JOIN appointment as a
+    ON e.id = a.ensemble_id
+INNER JOIN student_appointment as sa
+    ON a.id = sa.appointment_id
+WHERE (EXTRACT(YEAR FROM a.date) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(WEEK FROM a.date) = (EXTRACT(WEEK FROM CURRENT_DATE)+1)) 
+    OR (EXTRACT(YEAR FROM a.date) = (EXTRACT(YEAR FROM CURRENT_DATE)+1) AND EXTRACT(WEEK FROM a.date) = 1)
+GROUP BY e.genre, a.date, e.max_students;
 
+/*test*/
+SELECT e.genre as genre, a.date as appointment_date, 
+(CASE 
+    WHEN COUNT(student_id) = e.max_students THEN 'all seats filled'
+    WHEN COUNT(student_id) <= e.max_students-2 THEN '3 or more seats left'
+    ELSE 'less than 3 seats left' END) as booking_status
+FROM ensemble as e
+INNER JOIN appointment as a
+    ON e.id = a.ensemble_id
+INNER JOIN student_appointment as sa
+    ON a.id = sa.appointment_id
+WHERE EXTRACT(YEAR FROM a.date) = 2021 AND EXTRACT(WEEK FROM a.date) = 2
+GROUP BY e.genre, a.date, e.max_students;
 
 /*
 List the three instruments with the lowest monthly rental fee. 
 For each instrument tell whether it is rented or available to rent. 
 Also tell when the next group lesson for each listed instrument is scheduled.
 */
+
+SELECT i.instrument_tag as instrument, i.fee as fee, i.is_available as available_to_rent,
+(CASE 
+WHEN a.date >= CURRENT_DATE THEN a.date
+ELSE NULL END) as next_group_lesson
+FROM instrument_to_rent as i
+INNER JOIN instrument as inst
+    ON inst.type_of_instrument = i.type_of_instrument
+INNER JOIN group_lesson as gr 
+    ON inst.id = gr.instrument_id
+INNER JOIN appointment as a 
+    ON gr.id = a.group_lesson_id
+GROUP BY instrument, fee, available_to_rent, next_group_lesson
+ORDER BY fee
+LIMIT 3;
