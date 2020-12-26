@@ -1,11 +1,13 @@
 
 /*number of instruments rented per month for specified year*/
+CREATE VIEW rentals_per_month AS
 SELECT EXTRACT(MONTH FROM start_date) AS month, COUNT(*) AS total_rentals
 FROM rental
 WHERE EXTRACT(YEAR FROM start_date) = '2020'
 GROUP BY EXTRACT(MONTH FROM start_date);
 
 /*rented instruments of each type sorted by number of rentals*/
+CREATE VIEW inst_type_per_month
 SELECT EXTRACT(MONTH FROM start_date) AS month, type_of_instrument as instrument, Count(type_of_instrument) as amount_rented
 FROM rental as r INNER JOIN instrument_to_rent as i ON r.instrument_id=i.id
 WHERE EXTRACT(YEAR FROM start_date) = '2020'
@@ -14,6 +16,7 @@ ORDER BY EXTRACT(MONTH FROM start_date), amount_rented DESC;
 
 
 /*Average number of rentals each month of a specified year*/
+CREATE VIEW average_rentals_per_month AS
 SELECT AVG(a.total_rentals) AS average_rental_per_month
 (SELECT EXTRACT(MONTH FROM start_date) AS month, COUNT(*) AS total_rentals
 FROM rental
@@ -22,6 +25,7 @@ GROUP BY EXTRACT(MONTH FROM start_date)) AS a;
 
 
 /*Number of lessons given per month of a specified year*/
+CREATE VIEW lessons_per_month AS
 SELECT EXTRACT(MONTH FROM date) AS month, COUNT(*) AS lessons_given
 FROM appointment
 WHERE EXTRACT(YEAR FROM date) = '2020'
@@ -29,6 +33,7 @@ GROUP BY EXTRACT(MONTH FROM date);
 
 
 /*Number of lessons of each type per month of a specified year*/
+CREATE VIEW type_per_month AS
 SELECT 
 EXTRACT(MONTH FROM date) AS month, 
 COUNT(ap.group_lesson_id) AS group_lessons_given, 
@@ -42,6 +47,7 @@ ORDER BY EXTRACT(MONTH FROM date);
 
 
 /*average number of lessons per month for whole year*/
+CREATE VIEW average_per_month AS
 SELECT AVG(a.lessons_given) AS avg_lessons_per_month
 FROM(
 SELECT EXTRACT(MONTH FROM date) AS month, COUNT(id) AS lessons_given
@@ -50,6 +56,7 @@ WHERE EXTRACT(YEAR FROM date) = '2020'
 GROUP BY EXTRACT(MONTH FROM date)) as a;
 
 /*List all instructors who has given more than a specific number of lessons during the current month*/
+CREATE VIEW lesson_amount_warning AS
 SELECT i.employment_id as instructor, Count(a.id) as number_of_lessons
 FROM instructor as i
 INNER JOIN instructor_appointment as ia 
@@ -64,6 +71,7 @@ ORDER BY number_of_lessons DESC;
 
 
 /*List three instructors having given most lessons during last month, sorted by number of lessons*/
+CREATE VIEW most_worked_instructors AS
 SELECT i.employment_id as instructor, Count(a.id) as number_of_lessons
 FROM instructor as i
 INNER JOIN instructor_appointment as ia 
@@ -81,6 +89,7 @@ LIMIT 3;
 List all ensembles held during the next week, sorted by music genre and weekday. 
 For each ensemble tell whether it's full booked, has 1-2 seats left or has more seats left.
 */
+CREATE MATERIALIZED VIEW next_week_ensables AS
 SELECT e.genre as genre, a.date as appointment_date, 
 (CASE 
     WHEN COUNT(student_id) = e.max_students THEN 'all seats filled'
@@ -95,7 +104,7 @@ WHERE (EXTRACT(YEAR FROM a.date) = EXTRACT(YEAR FROM CURRENT_DATE) AND EXTRACT(W
     OR (EXTRACT(YEAR FROM a.date) = (EXTRACT(YEAR FROM CURRENT_DATE)+1) AND EXTRACT(WEEK FROM a.date) = 1)
 GROUP BY e.genre, a.date, e.max_students;
 
-/*test*/
+/*test for above*/
 SELECT e.genre as genre, a.date as appointment_date, 
 (CASE 
     WHEN COUNT(student_id) = e.max_students THEN 'all seats filled'
@@ -114,7 +123,7 @@ List the three instruments with the lowest monthly rental fee.
 For each instrument tell whether it is rented or available to rent. 
 Also tell when the next group lesson for each listed instrument is scheduled.
 */
-
+CREATE MATERIALIZED VIEW lowest_rental_fee AS
 SELECT i.instrument_tag as instrument, i.fee as fee, i.is_available as available_to_rent,
 (CASE 
 WHEN a.date >= CURRENT_DATE THEN a.date
