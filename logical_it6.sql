@@ -136,7 +136,8 @@ CREATE TABLE rental (
  start_date DATE NOT NULL,
  end_date DATE NOT NULL,
  student_id INT NOT NULL,
- instrument_id INT NOT NULL
+ instrument_id INT NOT NULL,
+ is_terminated BOOLEAN DEFAULT False NOT NULL
 );
 
 ALTER TABLE rental ADD CONSTRAINT PK_rental PRIMARY KEY (id);
@@ -151,7 +152,7 @@ CREATE TABLE ensemble (
  min_students INT NOT NULL,
  max_students INT NOT NULL,
  last_day_to_apply DATE NOT NULL,
- is_canceled BOOLEAN DEFAULT False,
+ is_canceled BOOLEAN DEFAULT False NOT NULL,
  Instructor_id INT
 );
 
@@ -226,6 +227,7 @@ CREATE TABLE enrollment_request (
  do_keep BOOLEAN NOT NULL,
  place_offered BOOLEAN,
  place_accepted BOOLEAN,
+ last_day_to_accept DATE,
  person_id INT NOT NULL,
  ensemble_id INT,
  group_lesson_id INT,
